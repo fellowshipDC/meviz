@@ -15,7 +15,23 @@ export class VizComponent implements OnInit {
 
 ngOnInit() {
 
-  var svg = d3.select("svg"),
+  d3.csv('./assets/museo.csv', (data) => {
+    
+  
+    this.data = data
+  
+    var museo = d3.nest()
+    .key(function(d:any){return d.museo_tematica_n1;})
+    .entries(this.data);
+  
+      console.log(museo);
+
+    });
+
+  
+  }//ngOnInit
+}
+/*var svg = d3.select("svg"),
   margin = {top: 20, right: 20, bottom: 30, left: 40},
   width = +svg.attr("width") - margin.left - margin.right,
   height = +svg.attr("height") - margin.top - margin.bottom;
@@ -74,7 +90,4 @@ d3.csv('./assets/events.csv', (data) => {
     
 
     
-  });
-
-  }//ngOnInit
-}
+  });*/
