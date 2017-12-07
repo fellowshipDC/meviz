@@ -15,58 +15,83 @@ export class VizComponent implements OnInit {
 
 ngOnInit() {
 
-  /*var svg = d3.select("svg"),
-  margin = {top: 20, right: 20, bottom: 30, left: 40},
-  width = +svg.attr("width") - margin.left - margin.right,
-  height = +svg.attr("height") - margin.top - margin.bottom;
+  //setting dimensions and margins of the graph
+  var margin = { top: 20, right: 20, bottom: 30, left: 40},
+      width = 960 -margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
 
-  var x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
-  var y = d3.scaleLinear().rangeRound([height, 0]);
+  // set the ranges
 
-  var g = svg.append("g")
-  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");*/
+  var x = d3.scaleBand()
+            .range([0, width])
+            .padding(0.1);
+  var y = d3.scaleLinear()
+            .range([height, 0]);
 
+  //append the svg object to the body of the shape
+  //append a 'group' element to 'svg'
+  //moves the 'group' element to the top left margin
 
-d3.csv('./assets/museo.csv', (error, data) => {
-  if (error) throw error;
+  var svg = d3.select("#visualization").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform",
+            "translate(" +margin.left + "," +margin.top + ")" );
 
-  this.data = data;
+  // defining colors
+
+  var color = d3.scaleOrdinal(d3.schemeCategory20c);
+
+  //get the data
+  d3.csv('./assets/museo.csv', (error, data) => {
+    if (error) throw error;
+
+    this.data = data;
   
-  var conteo = d3.nest()
-  .key(function(d) { return d.nom_ent; })
-  .rollup(function(v) {return v.length; })
-  .entries(this.data);
-
+    var conteo = d3.nest()
+      .key(function(d) { return d.nom_ent; })
+      .rollup(function(v) {return v.length; })
+      .entries(this.data);
   
+      console.log(conteo);
+    //Scale the range of the data in the domains
+    x.domain(conteo.map(function(c) { return c.key;}));
+    y.domain([0, d3.max(conteo, function(c) { return c.value})]);
 
-    console.log(conteo);
+    //append the rectangles for the bar chart
 
-    /*x.domain(this.data.map(function(d){ return d.nom_ent;}));
-    y.domain([0, d3.max(this.data, function(d) {return d.category;})]);
+    svg.selectAll(".bar")
+        .data(conteo)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x",function(c) { return x(c.key); })
+        .attr("width", x.bandwidth())
+        .attr("y", function(c) { return y(c.value); })
+        .attr("height", function(c) { return height - y(c.value); })
+        .attr('fill', function(c){
+          return "rgb(0, "+c.value*4.50+", 80)"});
 
-    g.append("g")
-     .attr("class", "axis axis--x")
-     .attr("transform", "translate(0," + height + ")")
-     .call(d3.axisBottom(x));
+          //.attr("fill", function(c: any) { return color(c.key); }); //provides color to each category
+    //add the x Axis
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        //
+        .call(d3.axisBottom(x))
+      .selectAll("text")
+        .attr("y", 0)
+        .attr("x", 9)
+        .attr("dy", ".35em")
+        .attr("transform", "rotate(60)")
+        .style("text-anchor", "start");
+        
 
-    g.append("g")
-      .attr("class", "axis axis--y")
-      .call(d3.axisLeft(y))
-     .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", "0.71em")
-      .attr("text-anchor", "end")
-      .text("Categories");
+    //add the y Axis
+    svg.append("g")
+        .call(d3.axisLeft(y));
 
-    g.selectAll(".bar")
-     .data(this.data)
-     .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d){ return x(d.nom_ent); })
-      .attr("y",function(d){ return y(d.category); })
-      .attr("width", x.bandwidth())
-      .attr("height", function(d) { return height - y(d.category); });*/
+
+
 
   });
 
