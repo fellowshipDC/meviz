@@ -15,7 +15,7 @@ export class VizComponent implements OnInit {
 
 ngOnInit() {
 
-  var svg = d3.select("svg"),
+  /*var svg = d3.select("svg"),
   margin = {top: 20, right: 20, bottom: 30, left: 40},
   width = +svg.attr("width") - margin.left - margin.right,
   height = +svg.attr("height") - margin.top - margin.bottom;
@@ -24,22 +24,24 @@ ngOnInit() {
   var y = d3.scaleLinear().rangeRound([height, 0]);
 
   var g = svg.append("g")
-  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");*/
 
 
-d3.csv('./assets/events.csv', (data) => {
+d3.csv('./assets/museo.csv', (error, data) => {
+  if (error) throw error;
+
+  this.data = data;
   
-
-  this.data = data = d3.nest()
+  var conteo = d3.nest()
   .key(function(d) { return d.nom_ent; })
-  .rollup(function(v) {return d3.sum(v, function(d){ return d.category;}) })
-  .entries(data);
+  .rollup(function(v) {return v.length; })
+  .entries(this.data);
 
   
 
-    console.log(this.data);
+    console.log(conteo);
 
-    x.domain(this.data.map(function(d){ return d.nom_ent;}));
+    /*x.domain(this.data.map(function(d){ return d.nom_ent;}));
     y.domain([0, d3.max(this.data, function(d) {return d.category;})]);
 
     g.append("g")
@@ -64,16 +66,8 @@ d3.csv('./assets/events.csv', (data) => {
       .attr("x", function(d){ return x(d.nom_ent); })
       .attr("y",function(d){ return y(d.category); })
       .attr("width", x.bandwidth())
-      .attr("height", function(d) { return height - y(d.category); });
+      .attr("height", function(d) { return height - y(d.category); });*/
 
-
-
-  }, function (error,data){
-    if (error) throw error;
-
-    
-
-    
   });
 
   }//ngOnInit
