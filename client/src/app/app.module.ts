@@ -5,15 +5,21 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { VizComponent } from './viz/viz.component';
+import { MapaComponent } from './mapa/mapa.component';
+import { AgmCoreModule } from '@agm/core';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
-    VizComponent
+    VizComponent,
+    MapaComponent
   ],
   imports: [
     BrowserModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyA_yetbQwK-K8yHxngPj6AA4jVocxZO4II'
+    }),
     AppRoutingModule
   ],
   providers: [],
