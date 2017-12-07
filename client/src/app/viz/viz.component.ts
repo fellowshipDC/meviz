@@ -69,8 +69,7 @@ ngOnInit() {
         .attr("width", x.bandwidth())
         .attr("y", function(c) { return y(c.value); })
         .attr("height", function(c) { return height - y(c.value); })
-        .attr('fill', function(c){
-          return "rgb(0, "+c.value*4.50+", 80)"});
+        .attr('fill', function(c) { return "rgb(0, "+c.value*4.50+", 80)" });
 
           //.attr("fill", function(c: any) { return color(c.key); }); //provides color to each category
     //add the x Axis
