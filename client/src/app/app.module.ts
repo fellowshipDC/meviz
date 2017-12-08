@@ -7,13 +7,19 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { VizComponent } from './viz/viz.component';
 import { MapaComponent } from './mapa/mapa.component';
 import { AgmCoreModule } from '@agm/core';
+import { RadarchartComponent } from './radarchart/radarchart.component';
+import { BarchartComponent } from './barchart/barchart.component';
+import { RadialchartComponent } from './radialchart/radialchart.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     VizComponent,
-    MapaComponent
+    MapaComponent,
+    RadarchartComponent,
+    BarchartComponent,
+    RadialchartComponent
   ],
   imports: [
     BrowserModule,
