@@ -43,14 +43,14 @@ var conteo = d3.nest()
   .rollup(function(v) {return v.length; })
   .entries(this.data); //Visualizing  categories
 
-conteo.sort(function(a,b) { return b.value - a.value; });
+conteo.sort(function(a,b) { return b.length - a.length; });
 
-var extent = d3.extent(data, function (d) { return d.value; })
+var extent = d3.extent(conteo, function (d) { return d.length; })
 var barScale = d3.scaleLinear()
     .domain(extent)
     .range([ 0, barHeight]);
 
-var keys = data.map(function(d,i) { return d.key; })
+var keys = conteo.map(function(d,i) { return d.key; })
 var numBars = keys.length;
 
 var x = d3.scaleLinear()
@@ -58,9 +58,9 @@ var x = d3.scaleLinear()
         .range([0, -barHeight]);
 
 var xAxis = d3.axisBottom()
-            //.scale(x).orient("left")
+            .scale(x)
             //.ticks(3)
-            .tickFormat(formatNumber);
+            .ticks(formatNumber);
 
 var circles = svg.selectAll("circle")
       .data(x.ticks(3))
@@ -83,7 +83,7 @@ var segments = svg.selectAll("path")
           .style("fill", function (d) { return color(d.key);})
           .attr("d", arc);
 
-segments.transition().ease("elastic").duration(1000).delay(function(d,i) { return (25-i)*100;})
+segments.transition().ease(d3.easeBounce).duration(1000).delay(function(d,i) { return (25-i)*100;})
         .attrTween("d",function(d,index){
           var i = d3.interpolate(d.outerRadius, barScale(+d.value));
           return function(t) {d.outerRadius = i(t); return arc(d,index);};

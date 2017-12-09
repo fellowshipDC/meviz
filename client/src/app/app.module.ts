@@ -10,6 +10,8 @@ import { AgmCoreModule } from '@agm/core';
 import { RadarchartComponent } from './radarchart/radarchart.component';
 import { BarchartComponent } from './barchart/barchart.component';
 import { RadialchartComponent } from './radialchart/radialchart.component';
+import { IntroComponent } from './intro/intro.component';
+import { AnalisisComponent } from './analisis/analisis.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,9 @@ import { RadialchartComponent } from './radialchart/radialchart.component';
     MapaComponent,
     RadarchartComponent,
     BarchartComponent,
-    RadialchartComponent
+    RadialchartComponent,
+    IntroComponent,
+    AnalisisComponent
   ],
   imports: [
     BrowserModule,

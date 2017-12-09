@@ -16,7 +16,7 @@ export class MapaComponent implements OnInit {
   ngOnInit() {
     
         
-    /*d3.csv('./assets/museo.csv', (data) => {
+    d3.csv('./assets/museo.csv', (data) => {
 
       function initMap() {
         
@@ -26,7 +26,7 @@ export class MapaComponent implements OnInit {
         console.log(data)
   
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 4,
+          zoom: 5,
           center: center
         });
   
@@ -45,7 +45,7 @@ export class MapaComponent implements OnInit {
      
 
     });
-      */  
+      
         
       }
 
