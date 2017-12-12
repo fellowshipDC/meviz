@@ -12,6 +12,8 @@ import { BarchartComponent } from './barchart/barchart.component';
 import { RadialchartComponent } from './radialchart/radialchart.component';
 import { IntroComponent } from './intro/intro.component';
 import { AnalisisComponent } from './analisis/analisis.component';
+import { Http, Response } from '@angular/http';
+import { HttpModule } from '@angular/http';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,8 @@ import { AnalisisComponent } from './analisis/analisis.component';
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyA_yetbQwK-K8yHxngPj6AA4jVocxZO4II'
     }),
-    AppRoutingModule
+    AppRoutingModule,
+    HttpModule
   ],
   providers: [],
   bootstrap: [AppComponent]
