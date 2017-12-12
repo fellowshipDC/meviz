@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import * as maps from 'js-marker-clusterer';
-declare const google:any;
+declare var $: any;
+declare var google: any;
 
 @Component({
   selector: 'app-mapa',
@@ -12,67 +13,39 @@ export class MapaComponent implements OnInit {
 
 
   constructor() { }
-  
+
+  initMap() {
+    var cdmx = {lat: 19.4286973, lng: -99.156051};
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 13,
+      center: cdmx
+    });
+
+    return map;
+  }
+
+  addMarker(map, lat, lng) {
+    var location = {lat: lat, lng: lng};
+    var marker = new google.maps.Marker({
+      position: location,
+      map: map
+    });
+  }
 
   ngOnInit() {
-    
 
-    
-
-        
     d3.csv('./assets/museo.csv', (data) => {
 
-      function initMap() {
+      console.log(data);
 
-        // Create an array of alphabetical characters used to label the markers.
-        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let map = this.initMap();
 
-        var location = data.map(d => { return (parseFloat(d.gmaps_latitud), parseFloat(d.gmaps_longitud));});
-       
-
-        console.log(location)
-        
-                // Add some markers to the map.
-                var markers = location.map(function(d:any, i) {
-                  return new google.maps.Marker({
-                    position: d,
-                    label: labels[i % labels.length]
-                  });
-                });
-        
-                // Add a marker clusterer to manage the markers.
-                var markerCluster = new maps.MarkerClusterer(map, markers,
-                    {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-              
-        
-        
-  
-        var center = {lat: 21.88286, lng: -102.28177};
-        var bounds = new google.maps.LatLngBounds();
-        console.log(data)
-  
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 5,
-          center: center
-        });
-  
-        for(var i = 0; i < data.length; i++ ) {
-          var position = new google.maps.LatLng(data[i]['gmaps_latitud'], data[i]['gmaps_longitud']);
-          bounds.extend(position);
-          var marker = new google.maps.Marker({
-              position: position,
-              map: map
-          });
-      }
-    }
-    
-    
-      initMap();
-     
+      data.map((object) => {
+        this.addMarker(map, parseFloat(object.gmaps_latitud), parseFloat(object.gmaps_longitud));
+      });
 
     });
-      
-        
-      }
+
+  }
 
 }
