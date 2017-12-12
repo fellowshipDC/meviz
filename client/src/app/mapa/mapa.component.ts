@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as d3 from 'd3';
+import * as maps from 'js-marker-clusterer';
 declare const google:any;
 
 @Component({
@@ -15,10 +16,35 @@ export class MapaComponent implements OnInit {
 
   ngOnInit() {
     
+
+    
+
         
     d3.csv('./assets/museo.csv', (data) => {
 
       function initMap() {
+
+        // Create an array of alphabetical characters used to label the markers.
+        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        var location = data.map(d => { return (parseFloat(d.gmaps_latitud), parseFloat(d.gmaps_longitud));});
+       
+
+        console.log(location)
+        
+                // Add some markers to the map.
+                var markers = location.map(function(d:any, i) {
+                  return new google.maps.Marker({
+                    position: d,
+                    label: labels[i % labels.length]
+                  });
+                });
+        
+                // Add a marker clusterer to manage the markers.
+                var markerCluster = new maps.MarkerClusterer(map, markers,
+                    {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+              
+        
         
   
         var center = {lat: 21.88286, lng: -102.28177};

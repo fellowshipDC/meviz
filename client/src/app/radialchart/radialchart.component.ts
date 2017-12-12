@@ -1,128 +1,142 @@
-import { Component, OnInit } from '@angular/core';
-import * as d3 from 'd3';
+  import { Component, OnInit } from '@angular/core';
+  import * as d3 from 'd3';
 
-@Component({
-  selector: 'app-radialchart',
-  templateUrl: './radialchart.component.html',
-  styleUrls: ['./radialchart.component.styl']
-})
-export class RadialchartComponent implements OnInit {
-data:any;
+  @Component({
+    selector: 'app-radialchart',
+    templateUrl: './radialchart.component.html',
+    styleUrls: ['./radialchart.component.styl']
+  })
+  export class RadialchartComponent implements OnInit {
+  data:any;
 
-  constructor() { }
+    constructor() { }
 
-  ngOnInit() {
+    ngOnInit() {
 
-    var width = 960,
-    height = 500,
-    barHeight = height / 2 - 40;
-
-var formatNumber = d3.format("s");
-
-var color = d3.scaleBand()
-    .range(["#8dd3c7","#ffffb3","#bebada","#fb8072",
-            "#80b1d3","#fdb462","#b3de69","#fccde5",
-            "#d9d9d9","#bc80bd","#ccebc5","#ffed6f"]);
-
-var svg = d3.select('svg')
-    .attr("width", width)
-    .attr("height", height)
-   .append("g")
-    .attr("transform", "translate(" + width/2 + "," + height/2 + ")");
-
-
-
-//get the data
-d3.csv('./assets/museo.csv', (error, data) => {
-if (error) throw error;
-
-this.data = data;
-
-var conteo = d3.nest()
-  .key(function(d) { return d.museo_tematica_n1; })
-  .rollup(function(v) {return v.length; })
-  .entries(this.data); //Visualizing  categories
-
-conteo.sort(function(a,b) { return b.length - a.length; });
-
-var extent = d3.extent(conteo, function (d) { return d.length; })
-var barScale = d3.scaleLinear()
-    .domain(extent)
-    .range([ 0, barHeight]);
-
-var keys = conteo.map(function(d,i) { return d.key; })
-var numBars = keys.length;
-
-var x = d3.scaleLinear()
-        .domain(extent)
-        .range([0, -barHeight]);
-
-var xAxis = d3.axisBottom()
-            .scale(x)
-            //.ticks(3)
-            .ticks(formatNumber);
-
-var circles = svg.selectAll("circle")
-      .data(x.ticks(3))
-    .enter().append("circle")
-      .attr("r", function(d) { return barScale(d); })
-      .style("fill", "none")
-      .style("stroke", "black")
-      .style("stroke-dasharray", "2,2")
-      .style("stroke-width", ".5px");
-
-var arc = d3.arc()
-    .startAngle(function(d,i) { return ( i * 2 * Math.PI)/ numBars; })
-    .endAngle(function (d,i) { return ((i + 1 ) * 2 * Math.PI) / numBars; })
-    .innerRadius(0);
-
-var segments = svg.selectAll("path")
-          .data(conteo)
-        .enter().append("path")
-          .each(function (d) { d.outerRadius = 0; })
-          .style("fill", function (d) { return color(d.key);})
-          .attr("d", arc);
-
-segments.transition().ease(d3.easeBounce).duration(1000).delay(function(d,i) { return (25-i)*100;})
-        .attrTween("d",function(d,index){
-          var i = d3.interpolate(d.outerRadius, barScale(+d.value));
-          return function(t) {d.outerRadius = i(t); return arc(d,index);};
-        });
-
-var lines = svg.selectAll("line")
-    .data(keys)
-  .enter().append("line")
-    .attr("y2", -barHeight - 20)
-    .style("stroke", "black")
-    .style("stroke-width", ".5px")
-    .attr("transform", function (d, i) { return "rotate(" + (i * 360 / numBars) + ")"; })
-
-svg.append("g")
-  .attr("class", "x axis")
-  .call(xAxis);
-
-//Labels
-
-var labelRadius = barHeight * 1.025;
-
-var labels = svg.append("g")
-    .classed("labels", true);
-
-labels.append("def")
-      .append("path")
-      .attr("id", "label-path")
-      .attr("d", "m0 " + -labelRadius + " a" + labelRadius + " " + labelRadius + " 0 1,1 -0.01 0");
-
-labels.selectAll("text")
-      .data(keys)
-    .enter().append("text")
-      .style("text-anchor", "middle")
-      .style("font-weight", "bold")
-      .style("fill", function(d, i) { return i * 100 / numBars + 50 / numBars + '%'; })
-      .text(function(d) { return d.toUpperCase(); });
-
+      const width = 600,
+      height = 400,
+      chartRadius = height / 2 - 40;
+    
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+    
+    let svg = d3.select('#radial').append('svg')
+      .attr('width', width)
+      .attr('height', height)
+      .append('g')
+        .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+    
+    let tooltip = d3.select('body').append('div')
+      .attr('class', 'tooltip');
+    
+    const PI = Math.PI,
+      arcMinRadius = 10,
+      arcPadding = 10,
+      labelPadding = -5,
+      numTicks = 10;
+    
+    
+    d3.csv('./assets/museo.csv', (error, data) => {
+    
+        data = d3.nest()
+            .key(function(d) { return d.museo_tematica_n1; })
+            .rollup(function(v) { return v.length})
+            .entries(data);
+    console.log(data);
+    
+      let scale = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.value) * 1.1])
+        .range([0, 2 * PI]);
+    
+      let ticks = scale.ticks(numTicks).slice(0, -1);
+      let keys = data.map((d, i) => d.key);
+      //number of arcs
+      const numArcs = keys.length;
+      const arcWidth = (chartRadius - arcMinRadius - numArcs * arcPadding) / numArcs;
+    
+      let arc = d3.arc()
+        .innerRadius((d, i) => getInnerRadius(i))
+        .outerRadius((d, i) => getOuterRadius(i))
+        .startAngle(0)
+        .endAngle((d, i) => scale(d))
+    
+      let radialAxis = svg.append('g')
+        .attr('class', 'r axis')
+        .selectAll('g')
+          .data(data)
+          .enter().append('g');
+    
+      radialAxis.append('circle')
+        .attr('r', (d, i) => getOuterRadius(i) + arcPadding);
+    
+      radialAxis.append('text')
+        .attr('x', labelPadding)
+        .attr('y', (d, i) => -getOuterRadius(i) + arcPadding)
+        .text(d => d.key);
+    
+      let axialAxis = svg.append('g')
+        .attr('class', 'a axis')
+        .selectAll('g')
+          .data(ticks)
+          .enter().append('g')
+            .attr('transform', d => 'rotate(' + (rad2deg(scale(d)) - 90) + ')');
+    
+      axialAxis.append('line')
+        .attr('x2', chartRadius);
+    
+      axialAxis.append('text')
+        .attr('x', chartRadius + 10)
+        .style('text-anchor', d => (scale(d) >= PI && scale(d) < 2 * PI ? 'end' : null))
+        .attr('transform', d => 'rotate(' + (90 - rad2deg(scale(d))) + ',' + (chartRadius + 10) + ',0)')
+        .text(d => d);
+    
+      //data arcs
+      let arcs = svg.append('g')
+        .attr('class', 'data')
+        .selectAll('path')
+          .data(data)
+          .enter().append('path')
+          .attr('class', 'arc')
+          .style('fill', (d, i) => color(i))
+    
+      arcs.transition()
+        .delay((d, i) => i * 200)
+        .duration(1000)
+        .attrTween('d', arcTween);
+    
+      arcs.on('mousemove', showTooltip)
+      arcs.on('mouseout', hideTooltip)
+    
+    
+      function arcTween(d, i) {
+        let interpolate = d3.interpolate(0, d.value);
+        return t => arc(interpolate(t), i);
+      }
+    
+      function showTooltip(d) {
+        tooltip.style('left', (d3.event.pageX + 10) + 'px')
+          .style('top', (d3.event.pageY - 25) + 'px')
+          .style('display', 'inline-block')
+          .html(d.value);
+      }
+    
+      function hideTooltip() {
+        tooltip.style('display', 'none');
+      }
+    
+      function rad2deg(angle) {
+        return angle * 180 / PI;
+      }
+    
+      function getInnerRadius(index) {
+        return arcMinRadius + (numArcs - (index + 1)) * (arcWidth + arcPadding);
+      }
+    
+      function getOuterRadius(index) {
+        return getInnerRadius(index) + arcWidth;
+      }
     });
+    
+      
+    }//ngOnInit
 
-  }//ngOnInit
-
-}
+  }
