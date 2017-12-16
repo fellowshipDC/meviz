@@ -2,64 +2,30 @@ var express = require('express');
 var router = express.Router();
 var csv = require('csvtojson');
 var d3 = require('d3');
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
 
-/* GET users listing. */
-/* READ ALL */
+var url = 'mongodb://localhost:27017/meviz';
+
+/* Read all */
 router.get('/', function(req, res, next) {    
-    csv()
-    .fromFile('./museo.csv')
-    .on('json', (json) => {
-
-    })
-    .on('end_parsed',(jsonArrObj)=>{
-        res.json(jsonArrObj)
-    })
-    .on('done', (error) => {
-        res.send({status: 500});
+    MongoClient.connect(url, function(err, db){
+        assert.equal(null, err);
+        console.log("Conected correctly to server");
+        //get collection and res documents
+        var col = db.collection('museums');
+        col.find({}).toArray(function(err, docs) {
+            console.log("Found the following records");
+            res.json({status: 200, data: docs}); 
+            db.close();            
+        });
     });
 });
-
-// Get all entities
-
-router.get('/states', function (req, res){
-    var arr = [];
-    var reps = {};
-
-    csv({
-        includeColumns: [6]
-
-    })
-    .fromFile('./museo.csv')
-    .on('json', (jObj) => {
-        if (arr.indexOf(jObj.nom_ent) < 0){
-            arr.push(jObj.nom_ent);
-            reps[jObj.nom_ent] = 1
-        }
-        else if (reps.hasOwnProperty(jObj.nom_ent)){
-            reps[jObj.nom_ent] += 1;
-        }
-    })
-    .on('end', () => {
-        res.json({status:200, states: arr, statesRepeated: reps});
-    })
-    .on('error', (error) =>{
-        res.send({status: 500});
-    })
 
 // Read one
 
 router.get('/:id', function(req, res){
-    csv().fromFile('./museo.csv')
-    .on('json', (jObj) =>{
-        if (jObj.id === req.params.id){
-            res.json({status:200, booj: jObj});
-        }
-    })
-    .on('error', (error) =>{
-        console.log('error');
-        res.send({status:500});
-    })
-})
 
 });
+
 module.exports = router;
