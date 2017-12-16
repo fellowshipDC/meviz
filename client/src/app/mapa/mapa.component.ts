@@ -92,10 +92,12 @@ export class MapaComponent implements OnInit {
 
           });
         }
-        else {
+        /*else {
           this.addMarker(map,parseFloat(latitud), parseFloat(longitud))
-        }
+        }*/
+
       }
+      console.log(notFound)
 
      
     });

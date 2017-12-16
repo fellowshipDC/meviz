@@ -14,6 +14,7 @@ import { IntroComponent } from './intro/intro.component';
 import { AnalisisComponent } from './analisis/analisis.component';
 import { Http, Response } from '@angular/http';
 import { HttpModule } from '@angular/http';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { HttpModule } from '@angular/http';
     BarchartComponent,
     RadialchartComponent,
     IntroComponent,
-    AnalisisComponent
+    AnalisisComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,
