@@ -49,6 +49,7 @@
 
       let ticks = scale.ticks(numTicks).slice(0, -1);
       let keys = data.map((d, i) => d.key);
+
       //number of arcs
       const numArcs = keys.length;
       const arcWidth = (chartRadius - arcMinRadius - numArcs * arcPadding) / numArcs;
