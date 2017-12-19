@@ -7,7 +7,6 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { VizComponent } from './viz/viz.component';
 import { MapaComponent } from './mapa/mapa.component';
 import { AgmCoreModule } from '@agm/core';
-import { RadarchartComponent } from './radarchart/radarchart.component';
 import { BarchartComponent } from './barchart/barchart.component';
 import { RadialchartComponent } from './radialchart/radialchart.component';
 import { IntroComponent } from './intro/intro.component';
@@ -22,7 +21,6 @@ import { FooterComponent } from './footer/footer.component';
     NavbarComponent,
     VizComponent,
     MapaComponent,
-    RadarchartComponent,
     BarchartComponent,
     RadialchartComponent,
     IntroComponent,

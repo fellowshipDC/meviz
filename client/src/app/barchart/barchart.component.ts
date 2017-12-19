@@ -61,8 +61,6 @@ constructor() { }
       .rollup(function(v) {return v.length; })
       .entries(this.data);
 
-      
-  console.log(conteo);
     //Scale the range of the data in the domains
     x.domain(conteo.map(function(c) { return c.key;}));
     y.domain([0, d3.max(conteo, function(c) { return c.value})]);

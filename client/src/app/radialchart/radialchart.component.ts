@@ -1,18 +1,22 @@
-  import { Component, OnInit } from '@angular/core';
+  import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+  import { Http, Response } from '@angular/http';
+  import { HttpModule } from '@angular/http';
   import * as d3 from 'd3';
 
   @Component({
     selector: 'app-radialchart',
     templateUrl: './radialchart.component.html',
-    styleUrls: ['./radialchart.component.styl']
+    styleUrls: ['./radialchart.component.css'],
+    encapsulation: ViewEncapsulation.None
   })
   export class RadialchartComponent implements OnInit {
   data:any;
+  
 
-    constructor() { }
+    constructor(private http: Http) { }
 
-    ngOnInit() {
 
+    draw(){
       const width = 600,
       height = 400,
       chartRadius = height / 2 - 40;
@@ -34,111 +38,130 @@
       labelPadding = -5,
       numTicks = 10;
 
-
-    d3.csv('./assets/museo.csv', (error, data) => {
-
-        data = d3.nest()
-            .key(function(d) { return d.museo_tematica_n1; })
-            .rollup(function(v) { return v.length})
-            .entries(data);
-    console.log(data);
-
       let scale = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.value) * 1.1])
-        .range([0, 2 * PI]);
+      .domain([0, d3.max(this.data, d => d.value) * 1.1])
+      .range([0, 2 * PI]);
 
-      let ticks = scale.ticks(numTicks).slice(0, -1);
-      let keys = data.map((d, i) => d.key);
+    let ticks = scale.ticks(numTicks).slice(0, -1);
+    let keys = this.data.map((d, i) => d.key);
 
-      //number of arcs
-      const numArcs = keys.length;
-      const arcWidth = (chartRadius - arcMinRadius - numArcs * arcPadding) / numArcs;
+    //number of arcs
+    const numArcs = keys.length;
+    const arcWidth = (chartRadius - arcMinRadius - numArcs * arcPadding) / numArcs;
 
-      let arc = d3.arc()
-        .innerRadius((d, i) => getInnerRadius(i))
-        .outerRadius((d, i) => getOuterRadius(i))
-        .startAngle(0)
-        .endAngle((d, i) => scale(d))
+    let arc = d3.arc()
+      .innerRadius((d, i) => getInnerRadius(i))
+      .outerRadius((d, i) => getOuterRadius(i))
+      .startAngle(0)
+      .endAngle((d, i) => scale(d))
 
-      let radialAxis = svg.append('g')
-        .attr('class', 'r axis')
-        .style('fill', '#fff')
-        .selectAll('g')
-          .data(data)
-          .enter().append('g');
+    let radialAxis = svg.append('g')
+      .attr('class', 'r axis')
+      .selectAll('g')
+        .data(this.data)
+        .enter().append('g');
 
-      radialAxis.append('circle')
-        .attr('r', (d, i) => getOuterRadius(i) + arcPadding);
+    radialAxis.append('circle')
+      .attr('r', (d, i) => getOuterRadius(i) + arcPadding);
 
-      radialAxis.append('text')
-        .attr('x', labelPadding)
-        .attr('y', (d, i) => -getOuterRadius(i) + arcPadding)
-        .text(d => d.key);
+    radialAxis.append('text')
+      .attr('x', labelPadding)
+      .attr('y', (d, i) => -getOuterRadius(i) + arcPadding)
+      .text(d => d.key);
 
-      let axialAxis = svg.append('g')
-        .attr('class', 'a axis')
-        .selectAll('g')
-          .data(ticks)
-          .enter().append('g')
-            .attr('transform', d => 'rotate(' + (rad2deg(scale(d)) - 90) + ')');
+    let axialAxis = svg.append('g')
+      .attr('class', 'a axis')
+      .selectAll('g')
+        .data(ticks)
+        .enter().append('g')
+          .attr('transform', d => 'rotate(' + (rad2deg(scale(d)) - 90) + ')');
 
-      axialAxis.append('line')
-        .attr('x2', chartRadius);
+    axialAxis.append('line')
+      .attr('x2', chartRadius);
 
-      axialAxis.append('text')
-        .attr('x', chartRadius + 10)
-        .style('text-anchor', d => (scale(d) >= PI && scale(d) < 2 * PI ? 'end' : null))
-        .attr('transform', d => 'rotate(' + (90 - rad2deg(scale(d))) + ',' + (chartRadius + 10) + ',0)')
-        .text(d => d);
+    axialAxis.append('text')
+      .attr('x', chartRadius + 10)
+      .style('text-anchor', d => (scale(d) >= PI && scale(d) < 2 * PI ? 'end' : null))
+      .attr('transform', d => 'rotate(' + (90 - rad2deg(scale(d))) + ',' + (chartRadius + 10) + ',0)')
+      .text(d => d);
 
-      //data arcs
-      let arcs = svg.append('g')
-        .attr('class', 'data')
-        .selectAll('path')
-          .data(data)
-          .enter().append('path')
-          .attr('class', 'arc')
-          .style('fill', (d, i) => color(i))
+    //data arcs
+    let arcs = svg.append('g')
+      .attr('class', 'data')
+      .selectAll('path')
+        .data(this.data)
+        .enter().append('path')
+        .attr('class', 'arc')
+        .style('fill', (d, i) => color(i))
 
-      arcs.transition()
-        .delay((d, i) => i * 200)
-        .duration(1000)
-        .attrTween('d', arcTween);
+    arcs.transition()
+      .delay((d, i) => i * 200)
+      .duration(1000)
+      .attrTween('d', arcTween);
 
-      arcs.on('mousemove', showTooltip)
-      arcs.on('mouseout', hideTooltip)
+    arcs.on('mousemove', showTooltip)
+    arcs.on('mouseout', hideTooltip)
 
 
-      function arcTween(d, i) {
-        let interpolate = d3.interpolate(0, d.value);
-        return t => arc(interpolate(t), i);
-      }
+    function arcTween(d, i) {
+      let interpolate = d3.interpolate(0, d.value);
+      return t => arc(interpolate(t), i);
+    }
 
-      function showTooltip(d) {
-        tooltip.style('left', (d3.event.pageX + 10) + 'px')
-          .style('top', (d3.event.pageY - 25) + 'px')
-          .style('display', 'inline-block')
-          .html(d.value);
-      }
+    function showTooltip(d) {
+      tooltip.style('left', (d3.event.pageX + 10) + 'px')
+        .style('top', (d3.event.pageY - 25) + 'px')
+        .style('display', 'inline-block')
+        .html(d.value);
+    }
 
-      function hideTooltip() {
-        tooltip.style('display', 'none');
-      }
+    function hideTooltip() {
+      tooltip.style('display', 'none');
+    }
 
-      function rad2deg(angle) {
-        return angle * 180 / PI;
-      }
+    function rad2deg(angle) {
+      return angle * 180 / PI;
+    }
 
-      function getInnerRadius(index) {
-        return arcMinRadius + (numArcs - (index + 1)) * (arcWidth + arcPadding);
-      }
+    function getInnerRadius(index) {
+      return arcMinRadius + (numArcs - (index + 1)) * (arcWidth + arcPadding);
+    }
 
-      function getOuterRadius(index) {
-        return getInnerRadius(index) + arcWidth;
-      }
-    });
+    function getOuterRadius(index) {
+      return getInnerRadius(index) + arcWidth;
+    }
+  }
 
+
+    ngOnInit() {
+
+    this.getData();
+     
+
+      
 
     }//ngOnInit
+
+    getData() {
+      const requestUrl = `http://localhost:3000/museums/`
+      this.http.get(requestUrl)
+        .subscribe(
+          (res: Response) => {
+            const data = res.json();
+            
+              if(data.data.length > 0){
+                this.data = d3.nest()
+                              .key(function(d) { return d.museo_tematica_n1; })
+                              .rollup(function(v) { return v.length})
+                              .entries(data.data);
+          
+                this.draw();
+              }
+          err => {
+            console.log('error');
+          }
+        })
+    }
+
 
   }

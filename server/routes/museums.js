@@ -4,8 +4,11 @@ var csv = require('csvtojson');
 var d3 = require('d3');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
+var cors = require('cors');
 
 var url = 'mongodb://localhost:27017/meviz';
+
+
 
 /* Read all */
 router.get('/', function(req, res, next) {    

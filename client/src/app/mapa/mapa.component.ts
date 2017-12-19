@@ -7,7 +7,7 @@ declare var $: any;
 declare var google: any;
 declare var MarkerClusterer: any;
 
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCffOiHpivN67CD_ffa5qUmi9_ZnYq1SfI'
+const GOOGLE_MAPS_API_KEY = 'AIzaSyAtsAnZ-V5yr5erdgfD2xAx6UFjeQra6lw'
 const museumCSVFile = './assets/museo.csv'
 
 @Component({
@@ -63,7 +63,7 @@ export class MapaComponent implements OnInit {
         if (latitud === '0' || longitud === '0') {
           const urlSafeName = name.replace(/\s/g, "+");
           const urlSafeCity = ciudad.replace(/\s/g, "+");
-          const requestUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${urlSafeName},${urlSafeCity},${codigoPostal}&key=${GOOGLE_MAPS_API_KEY}`
+          const requestUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${urlSafeName},${codigoPostal}&key=${GOOGLE_MAPS_API_KEY}`
     
           this.http.get(requestUrl).subscribe((res: Response) => {
             const latLng = res.json()
@@ -92,8 +92,9 @@ export class MapaComponent implements OnInit {
 
           });
         }
+        this.addMarker(map,parseFloat(latitud), parseFloat(longitud))
         /*else {
-          this.addMarker(map,parseFloat(latitud), parseFloat(longitud))
+          
         }*/
 
       }

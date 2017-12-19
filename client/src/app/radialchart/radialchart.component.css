@@ -1,7 +1,9 @@
 body {
   font: 12px sans-serif;
 }
-
+#radial{
+  width: 50%;
+}
 svg {
   margin: 0px auto;
   display: block;
@@ -22,11 +24,13 @@ path.arc:hover {
 }
 
 .axis circle {
-  fill: none;
+  fill: transparent;
 }
 
 .r.axis text {
   text-anchor: end;
+  color: black;
+  opacity: 1;
 }
 
 .tooltip {
@@ -37,4 +41,5 @@ path.arc:hover {
   box-shadow: -3px 3px 15px #888;
   color: white;
   padding: 6px;
+  opacity: 1;
 }
