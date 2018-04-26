@@ -1,45 +1,11 @@
-<div id="map" style="height:450px"></div>
-
-<div class="custom-controls-stacked" onchange="filterMarkers(this.value);" id="filter">
-    <label class="custom-control custom-radio">
-      <input id="radioStacked3" name="radio-stacked" type="radio" class="custom-control-input" value="Historia"> 
-      <span class="custom-control-indicator"></span>
-      <span class="custom-control-description">Historia</span>
-    </label>
-    <label class="custom-control custom-radio">
-        <input id="radioStacked4" name="radio-stacked" type="radio" class="custom-control-input" value="Arte">
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description">Arte</span>
-    </label>
-    <label class="custom-control custom-radio">
-        <input id="radioStacked4" name="radio-stacked" type="radio" class="custom-control-input" value="Ciencia y tecnologia">
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description">Ciencia y tecnología</span>
-    </label>
-    <label class="custom-control custom-radio">
-        <input id="radioStacked4" name="radio-stacked" type="radio" class="custom-control-input" value="Especializado">
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description">Especializado</span>
-    </label>
-    <label class="custom-control custom-radio">
-        <input id="radioStacked4" name="radio-stacked" type="radio" class="custom-control-input" value="TND">
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description">Antropología</span>
-    </label>
-    <label class="custom-control custom-radio">
-        <input id="radioStacked4" name="radio-stacked" type="radio" class="custom-control-input" value="Arqueologia">
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description">Arqueología</span>
-    </label>
-    <label class="custom-control custom-radio">
-        <input id="radioStacked4" name="radio-stacked" type="radio" class="custom-control-input" value="TND">
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description">TND</span>
-    </label>
-    <label class="custom-control custom-radio">
-        <input id="radioStacked4" name="radio-stacked" type="radio" class="custom-control-input" value="">
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description">Sin catalogar</span>
-    </label>
-  </div>
-<script src="./assets/markerclusterer.js"></script>
+<div id="map" style="height:450px" ></div>
+<!--categoriesFilter: { group: '' } : categoriesChecked() : false-->
+    <div class="custom-controls-stacked" *ngFor="let category of this.categories">
+        <label class="custom-control custom-radio">
+            <input id="radioStacked4" name="radio-stacked" type="checkbox" 
+             [(ngModel)]="category.checked" class="custom-control-input" (click)="selectedCat()" [value]="category.value">
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"> {{category.value}} </span>
+        </label>
+    
+    </div>
